@@ -476,7 +476,9 @@ def nmap():
         
         cprint(f"Running nmap on {dom} log file location: {logDir}{dom}-nmap", "green")
         # os.system(f"nmap -sC -A -T 4 -sV -Pn --top-ports 100 {dom} >> {logDir}{dom} -nmap")
-        os.system(f"nmap -sC -A -T 4 -sV -Pn -p 1-65535 {dom} >> {logDir}{dom}-nmap")
+        os.system(f"nmap -sC -A -T 4 -sV -Pn -p- {dom} >> {logDir}{dom}-nmap")    
+        os.system(f"nmap -sV --script vulners {dom} >> {logDir}/{dom}-vulners")
+        #os.system(f"sudo nmap -sU -sT -p- -Pn {dom} >> {logDir}/{dom}-udpallports")    # requires to be run as sudo
         
         # cprint(f"Running masscan on {dom} log file location: {logDir}{dom}-masscan", "green")
         # masscanIP = IPlookup(dom)
