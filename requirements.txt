@@ -1,0 +1,8 @@
+requests
+dnspython
+termcolor
+icecream
+requests_html
+bs4
+dnslib
+typing_extensions
