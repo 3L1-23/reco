@@ -43,6 +43,7 @@ logDir = f"~/{logTarget}/logs/"
 
 ##wordlists##
 #wordlist="/usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-small.txt"
+# wordlist = "/usr/share/wordlists/wfuzz/general/big.txt"
 wordlist = "/usr/share/wordlists/dirb/common.txt"
 ##</wordlists##
 
@@ -343,34 +344,38 @@ def sqlmap(url=None):
     # command = "sqlmap -u " + '"' + url + '"' + " --dbs --batch --forms --crawl=2"
     # command = "sqlmap -u " + '"' + url + '"' + " --dbs --batch --forms --tamper=apostrophemask --random-agent --level 3 --risk 3"
     # command = "sqlmap -u " + '"' + url + '"' + " --dbs --batch --forms --tamper=apostrophemask --random-agent --crawl=5"
-    SQLMap = f'sqlmap -u  "{url}" --banner --batch --tamper=apostrophemask --random-agent --level 3 --risk 3'
-    SQLMapForms = f'sqlmap -u  "{url}" --banner --forms --batch --tamper=apostrophemask --random-agent --level 3 --risk 3'
+    SQLMap = f'sqlmap -u "{url}" --banner --batch --tamper=apostrophemask --random-agent --level 3 --risk 3'
+    SQLMapForms = f'sqlmap -u "{url}" --banner --forms --batch --tamper=apostrophemask --random-agent --level 3 --risk 3'
     
     if url == None:
-
-        cprint("SQLMap will target URL's in file: SQLMapTargets", "red")
-        cprint("\nYou can hit ctl + c during a scan and then hit [n]next parameter or [e]end detection", "red")
-        cprint("This will allow you to end scan on current target it if appears to not be vulnerable but NOT the script\n", "yellow")
-        time.sleep(1)
-
-        # SQLMap = f"sqlmap --banner --batch --tamper=apostrophemask --random-agent -o -m {logDir}SQLMapTargets --risk 3 --level 3 --smart"
-        # SQLMapForms = f"sqlmap --banner --forms --batch --tamper=apostrophemask --random-agent -o -m {logDir}SQLMapTargets --risk 3 --level 3 --smart"
-        # SQLMapForms = f"sqlmap --current-user --forms --batch --tamper=apostrophemask,space2comment,space2hash --random-agent -o -m {logDir}SQLMapTargets --risk 2 --level 2"
-        # SQLMap = f"sqlmap --current-user --batch --tamper=apostrophemask,space2comment,space2hash --random-agent -o -m {logDir}SQLMapTargets --risk 3 --level 5"
-        # SQLMap = f"sqlmap --hex --tamper=base64encode --random-agent --risk 3 --level 5 --threads 10 --batch -b -m {logDir}SQLMapTargets"
-        # sqlMapTamperMySQL = f"sqlmap --current-user --tamper=between,bluecoat,charencode,equaltolike,greatest,ifnull2ifisnull,multiplespaces,percentage,randomcase,space2comment,space2hash,space2morehash,space2mysqldash,space2plus,space2randomblank,unionalltounion,unmagicquotes,versionedkeywords,versionedmorekeywords,xforwardedfor -m {logDir}SQLMapTargets"
-        # sqlmapCrawl = f'sqlmap --current-user --forms --batch --crawl=5 --tamper=apostrophemask,space2comment,space2hash,space2morehash,space2mysqldash,space2plus,space2randomblank,unionalltounion --random-agent -o --risk 2 --level 2 -m {logDir}SQLMapTargets'
-        # time.sleep(1)
-        # cprint("Running command: " + SQLMapInject, "magenta")
-        # os.system(SQLMapInject)
-        cprint("Running command: " + SQLMap, "magenta")
-        os.system(SQLMap)
-        cprint("Running command: " + SQLMapForms, "magenta")
-        os.system(SQLMapForms)
-        # cprint("Running MySQL tamper command: " + sqlMapTamperMySQL, "magenta")
-        # os.system(sqlMapTamperMySQL)
-        # cprint("Running MySQL crawl command: " + sqlmapCrawl, "magenta")
-        # os.system(sqlmapCrawl)
+        for i in open(logDir + "SQLMapTargets", "r").read().splitlines():
+            
+            SQLMap = SQLMap.replace('None', i)
+            SQLMapForms = SQLMapForms.replace('{url}', i)
+        
+            cprint("SQLMap will target URL's in file: SQLMapTargets", "red")
+            cprint("\nYou can hit ctl + c during a scan and then hit [n]next parameter or [e]end detection", "red")
+            cprint("This will allow you to end scan on current target it if appears to not be vulnerable but NOT the script\n", "yellow")
+            time.sleep(1)
+    
+            # SQLMap = f"sqlmap --banner --batch --tamper=apostrophemask --random-agent -o -m {logDir}SQLMapTargets --risk 3 --level 3 --smart"
+            # SQLMapForms = f"sqlmap --banner --forms --batch --tamper=apostrophemask --random-agent -o -m {logDir}SQLMapTargets --risk 3 --level 3 --smart"
+            # SQLMapForms = f"sqlmap --current-user --forms --batch --tamper=apostrophemask,space2comment,space2hash --random-agent -o -m {logDir}SQLMapTargets --risk 2 --level 2"
+            # SQLMap = f"sqlmap --current-user --batch --tamper=apostrophemask,space2comment,space2hash --random-agent -o -m {logDir}SQLMapTargets --risk 3 --level 5"
+            # SQLMap = f"sqlmap --hex --tamper=base64encode --random-agent --risk 3 --level 5 --threads 10 --batch -b -m {logDir}SQLMapTargets"
+            # sqlMapTamperMySQL = f"sqlmap --current-user --tamper=between,bluecoat,charencode,equaltolike,greatest,ifnull2ifisnull,multiplespaces,percentage,randomcase,space2comment,space2hash,space2morehash,space2mysqldash,space2plus,space2randomblank,unionalltounion,unmagicquotes,versionedkeywords,versionedmorekeywords,xforwardedfor -m {logDir}SQLMapTargets"
+            # sqlmapCrawl = f'sqlmap --current-user --forms --batch --crawl=5 --tamper=apostrophemask,space2comment,space2hash,space2morehash,space2mysqldash,space2plus,space2randomblank,unionalltounion --random-agent -o --risk 2 --level 2 -m {logDir}SQLMapTargets'
+            # time.sleep(1)
+            # cprint("Running command: " + SQLMapInject, "magenta")
+            # os.system(SQLMapInject)
+            cprint("Running command: " + SQLMap, "magenta")
+            os.system(SQLMap)
+            cprint("Running command: " + SQLMapForms, "magenta")
+            os.system(SQLMapForms)
+            # cprint("Running MySQL tamper command: " + sqlMapTamperMySQL, "magenta")
+            # os.system(sqlMapTamperMySQL)
+            # cprint("Running MySQL crawl command: " + sqlmapCrawl, "magenta")
+            # os.system(sqlmapCrawl)
 
         
 
@@ -743,6 +748,7 @@ def wfuzz(URL):
     
 def wpscan(URL=None):
     cprint("Ensure your targets are just the BASE domain name, not full URL`s for batch file run", "red")
+    cprint("Or change the output file to be like the single run command", "red")
     time.sleep(3)
     if URL == None:
         # for url in open(f"{logDir}wordpressTargs", "r").read().splitlines():
@@ -751,7 +757,7 @@ def wpscan(URL=None):
             stripURL = stripURL.replace("/", '')
             os.system(f"wpscan --url {url} -o {logDir}wpscan-{stripURL}")
     else:
-        os.system(f"wpscan --url {URL}")
+        os.system(f"wpscan --url {URL} >> {logDir}wpscan{randomIntSmall}")
 
 
 def createFiles():
@@ -882,11 +888,11 @@ def main():
 
         elif opt == ("--bustmap"):
             if args == []:
-                goBuster()
                 nmap()
+                goBuster()
             else:
-                goBuster(args[0])
                 nmap(args[0])
+                goBuster(args[0])
 
         elif opt == ("--log4j"):
             if args == []:
