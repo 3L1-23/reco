@@ -6,6 +6,14 @@
 
 #### Usage: 
 
+With Alias Edit:
+
+```
+reco -h
+```
+
+Without Alias Edit:
+
 ```
 python3 reco.py -h
 ```
@@ -14,7 +22,9 @@ python3 reco.py -h
 
 ## Install Docker & Docker Compose
 
-```
+install_docker_ubuntu.sh:
+
+```bash
 #! /bin/bash
 if [ "$EUID" -ne 0 ]
   then echo "[-] Please run as root"

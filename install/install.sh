@@ -1,5 +1,6 @@
 #!/bin/bash
 #Tested on Kali; some of these won't work on other linux distro's
+#Container is built on ubuntu
 # user=myusername   #for vm - comment out for container
 
 echo "This script will install the required dependicies on linux for running red team tools automagically"
@@ -32,3 +33,5 @@ cd /github/ && git clone https://github.com/iamj0ker/bypass-403
 cd /github/ && git clone https://github.com/TheRook/subbrute.git
 
 # sudo chown -R $user:$user /github/    #for vm - comment out for container
+
+echo "alias reco='cd /reco && python3 reco.py'" >> ~/.bashrc; source ~/.bashrc
