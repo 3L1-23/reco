@@ -4,7 +4,7 @@
 
 echo "This script will install the required dependicies on linux for running red team tools automagically"
 
-sudo apt install masscan -y && sudo apt install nmap -y && sudo apt install gobuster -y && sudo apt install sqlmap -y && sudo apt install golang-go -y && sudo apt install python3-pip -y && sudo apt install wfuzz -y && audo apt install hydra -y && apt install amass -y && sudo apt install wpscan -y
+sudo apt install masscan -y && sudo apt install nmap -y && sudo apt install gobuster -y && sudo apt install sqlmap -y && sudo apt install golang-go -y && sudo apt install python3-pip -y && sudo apt install wfuzz -y && audo apt install hydra -y && apt install amass -y && sudo apt install wpscan -y && sudo apt install ffuf -y && sudo apt install nuclei -y
 
 mkdir /github/ && cd /github/ && git clone https://github.com/aboul3la/Sublist3r.git
 
