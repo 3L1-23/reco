@@ -674,7 +674,7 @@ def amass(domain=None):
 
 
 def subbrute(domain=None):
-    cprint("Check out the README for more info", "green")
+    cprint("Check out the README for more info on SUBBRUTE", "green")
     
     command = f"cd /github/subbrute/ && python3 subbrute.py -p {{targetDom}} -o {logDir}{{logFile}}-subbrute"
 
