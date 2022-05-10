@@ -17,7 +17,8 @@ echo "Done with python3 install"
 # echo "Done with pip3 install"
 
 
-sudo apt install masscan -y && sudo apt install gobuster -y && sudo apt install nmap -y && sudo apt install sqlmap -y && sudo apt install golang-go -y && sudo apt install wfuzz -y && audo apt install hydra -y && apt install amass -y && sudo apt install wpscan -y && sudo apt install ffuf -y && sudo apt install nuclei -y
+sudo apt install masscan -y && sudo apt install gobuster -y && sudo apt install nmap -y && sudo apt install sqlmap -y && sudo apt install golang-go -y && sudo apt install wfuzz -y && audo apt install hydra -y && apt install amass -y && sudo apt install wpscan -y && sudo apt install nuclei -y
+
 echo "Main install complete"
 
 pip3 install -r requirements.txt
@@ -32,6 +33,12 @@ cd /github/ && git clone https://github.com/iamj0ker/bypass-403
 
 cd /github/ && git clone https://github.com/TheRook/subbrute.git
 
+
+### MAKE SURE THIS WORKS ON NEXT BUILD (did work withiin the container)
+# sudo apt install ffuf -y #old way of doing it
+git clone https://github.com/ffuf/ffuf ; cd ffuf ; go get ; go build; cp ffuf /usr/bin
+
 # sudo chown -R $user:$user /github/    #for vm - comment out for container
 
 echo "alias reco='cd /reco && python3 reco.py'" >> ~/.bashrc; source ~/.bashrc
+echo "alias reco='cd /reco && python3 reco.py'" >> /home/trinity/.bashrc

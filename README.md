@@ -9,8 +9,12 @@
 To Do:
 
 <ul>
-<li>amass not working right on container; or maybe at all</l>
-<li>nuclei</l>
+<li>amass not working right on container; or maybe at all</li>
+<li>nuclei</li>
+<li>put all variables into the payloads file</li>
+<li>Fix gobuster for container (wordlist path is wrong, check out work vm for the path the container has /usr/share/dirb/wordlist instead of /usr/share/wordlists/dirb/)</li>
+<li>Setup the trinity account to be used instead of root</li>
+<li>make sure ffuf is working right, comments in the isntall.sh file; apt install no go on ubuntu</li>
 </ul>
 
 ## Install & Usage: 
@@ -19,7 +23,7 @@ To Do:
 <li>Change the variables for XSS payloads to your URL in run/payloads.py </li>
 <li>Change the interact.sh variable to your URL in run/reco.py</li>
 <li>Set the logdir variable in run/reco.py for logging</li>
-<li>Any other variables that are required are at the top or run/reco.py or run/payloads.py</li>
+<li>Any other variables that are required are at the top of run/reco.py or in run/payloads.py</li>
 </ol>
 
 ### Docker

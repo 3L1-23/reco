@@ -754,7 +754,7 @@ def fuzzUrls():
 def ffuf(URL=None):
     #https://cybersecnerds.com/ffuf-everything-you-need-to-know/
     cprint(F"Fuzzing {URL} with recursion depth of 3", "green")
-    os.system(f"ffuf -c -r -w {wordlist} -u {URL} -recursion -recursion-depth 3 >> '{logDir}ffuf-{randomIntSmall}'")
+    os.system(f"ffuf -c -r -w {wordlist} -u {URL} -recursion -recursion-depth 3 -of html -o '{logDir}ffuf-{randomIntSmall}'")
 
 
 def wfuzz(URL):
