@@ -1,25 +1,14 @@
 # RECO
 
-## Automates red team tools & incorporates custom ones
+## Automates Red Team Tools & Incorporates Custom Ones
 
 ### WayBackURLS, Sublist3r, NMAP, GoBuster, Live URLS, SQLMap, log4j, XSS Hunter
 
-#### Some editing of the code is required for some modules, the edits are simple and mainly in the os.system commands for sqlmap or other tools with large CLI references
+#### Some editing of the code is required for some modules
 
-To Do:
+#### The edits are simple and mainly in the os.system commands for sqlmap or other tools with large CLI references
 
-<ul>
-<li>amass not working right on container; or maybe at all</li>
-<li>put all variables into the payloads file??</li>
-<li>add symlinks instead of alias's for calling reco?</li>
-<li>create a payloads file for sqlmap and other tools so its easy to change payloads and not look at entire code, replaces one above, #3</li>
-<li>verify openvpn works, although best to just run this on a minimul install VM</li>
-<li>create a yaml/ansible file for the install instead of install.sh</li>
-<li>try loop on ssh_connect and rdp_connect</li>
-<li>If can get PIA working be nice</li>
-</ul>
-
-## Install & Usage: 
+## Install & Usage
 
 <ol>
 <li>Change the variables for XSS payloads to your URL in run/payloads.py </li>
@@ -53,7 +42,7 @@ Build and run:
 bash deploy.sh
 ```
 
-### RECO
+### RECO Usage
 
 To find vnc, ssh or xrdp IP
 
@@ -92,3 +81,17 @@ To reconnect RDP
 
 ```
 bash rdp_connect.sh
+```
+
+## To Do
+
+<ul>
+<li>amass not working right on container; or maybe at all</li>
+<li>put all variables into the payloads file??</li>
+<li>add symlinks instead of alias's for calling reco?</li>
+<li>create a payloads file for sqlmap and other tools so its easy to change payloads and not look at entire code, replaces one above, #3</li>
+<li>verify openvpn works, although best to just run this on a minimul install VM</li>
+<li>create a yaml/ansible file for the install instead of install.sh</li>
+<li>try loop on ssh_connect and rdp_connect</li>
+<li>If can get PIA working be nice</li>
+</ul>
