@@ -681,7 +681,7 @@ def amass(domain=None):
 def nuclei(domain=None):
     cprint("Running NUCLEI", "green")
     
-    command = (f"nuclei -as -u {{domain}} -o {logDir}{{logFile}}-nuclei")    #-passive -src 2 possible switches from github
+    command = (f"nuclei -u {{domain}} -o {logDir}{{logFile}}-nuclei")    #-passive -src 2 possible switches from github
     
     if domain == None:
         for dom in open(f"{logDir}targetDomains", "r"):
