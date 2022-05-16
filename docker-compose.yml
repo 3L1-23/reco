@@ -1,0 +1,19 @@
+version: "2.4"
+services:
+  reco:
+    build: .
+    image: reco
+    container_name: reco
+    ports:
+    - 80:6080
+    - 22:22
+    environment:
+    - VNC_PASSWORD=password
+    - ROOT_PASSWORD=UQcyNFQ
+    - TRINITY_PASSWORD=password
+    cap_add:
+      - NET_ADMIN
+    # restart: always
+    volumes:
+    - pathto/reco/run:/reco/
+    

@@ -13,7 +13,8 @@ from typing_extensions import Protocol
 from xml import dom
 from dns.rdatatype import NULL
 from importlib_metadata import re
-from more_itertools import callback_iter, strip
+# from more_itertools import callback_iter, strip
+from more_itertools import strip
 import requests
 # import urllib.request
 import time
@@ -33,12 +34,12 @@ import webbrowser
 ## Vars ##
 
 ##Logging##
-logTarget = "targetlogfilename"
+logTarget = "reco"
 #platform = "bugcrowd"
 # platform = "hacker1"
 # Make sure you / at the end $path/logs/ NOT $path/logs
-logDir = f"~/{platform}/{logTarget}/logs/"
-logDir = f"~/{logTarget}/logs/"
+# logDir = f"~/{platform}/{logTarget}/logs/"
+logDir = f"/{logTarget}/logs/"
 ##</Logging##
 
 ##wordlists##
@@ -345,8 +346,10 @@ def sqlmap(url=None):
     # command = "sqlmap -u " + '"' + url + '"' + " --dbs --batch --forms --crawl=2"
     # command = "sqlmap -u " + '"' + url + '"' + " --dbs --batch --forms --tamper=apostrophemask --random-agent --level 3 --risk 3"
     # command = "sqlmap -u " + '"' + url + '"' + " --dbs --batch --forms --tamper=apostrophemask --random-agent --crawl=5"
-    SQLMap = f'sqlmap -u "{url}" --banner --batch --tamper=apostrophemask --random-agent --level 3 --risk 3'
-    SQLMapForms = f'sqlmap -u "{url}" --banner --forms --batch --tamper=apostrophemask --random-agent --level 3 --risk 3'
+    #SQLMap = f'sqlmap -u "{url}" --banner --batch --tamper=apostrophemask --random-agent --level 3 --risk 3'
+    SQLMap = f'sqlmap -u "{url}" --banner --batch --tamper=apostrophemask --random-agent'
+    #SQLMapForms = f'sqlmap -u "{url}" --banner --forms --batch --tamper=apostrophemask --random-agent'
+    SQLMapForms = f'sqlmap -u "{url}" --banner --forms --batch --tamper=apostrophemask --random-agent --leve 3 --risk 3'
     
     if url == None:
         for i in open(logDir + "SQLMapTargets", "r").read().splitlines():
@@ -601,7 +604,7 @@ def URLStatus(file=None):
                     open(f"{logDir}dedupedTargets-liveURLStatusCode", 'a').write(i + "\n\n")
 
     else:
-        for targ in open(f"{logDir}{file}"):
+        for targ in open(f"{logDir}{file}").read().splitlines():
 
             try:
                 hostStatus = requests.get(targ, verify=False, timeout=3)
@@ -628,7 +631,9 @@ def hydra(host):
     ####
     # example full URL for below - http://192.168.0.1/33df0826a8/login
     # hydra -l <USER> -p <PASSWORD> <IP_ADDRESS> http-post-form "<LOGIN_PAGE>:<REQUEST_BODY>:<ERROR_MESSAGE>"
-    # payload = "/33df0826a8/login/:username=^USER^&password=^PASS^:Invalid username"
+
+    # hydra -s 443 https-post-form "<LOGIN_PAGE>:<REQUEST_BODY>:<ERROR_MESSAGE> -l <USER> -p <PASSWORD> <IP_ADDRESS> "   # For HTTPS
+    payload = "/33df0826a8/login/:username=^USER^&password=^PASS^:Invalid username"
     ####
     os.system(f'hydra {host} http-post-form "{payload}" -l username -P passes.txt')
     
@@ -671,6 +676,25 @@ def amass(domain=None):
         cmd = command.replace("{domain}", domain)
         os.system(cmd.replace("{logFile}", domain))
         cprint(f"Log file location: {logDir}{domain}-amass", "green")
+
+
+def nuclei(domain=None):
+    cprint("Running NUCLEI", "green")
+    
+    command = (f"nuclei -as {{domain}} -o {logDir}{{logFile}}-nuclei")    #-passive -src 2 possible switches from github
+    
+    if domain == None:
+        for dom in open(f"{logDir}targetDomains", "r"):
+            
+            cmd = command.replace("{domain}", dom)
+            os.system(cmd.replace("{logFile}", dom))
+            cprint(f"Log file location: {logDir}{domain}", "green")
+
+    else:
+
+        cmd = command.replace("{domain}", domain)
+        os.system(cmd.replace("{logFile}", str(randomIntBig)))
+        cprint(f"Log file location: {logDir}", "green")
 
 
 def subbrute(domain=None):
@@ -820,8 +844,6 @@ def test(callback_host, payload):
 # did not star 1 below
 # https://gist.github.com/ndavison/298d11b3a77b97c908d63a345d3c624d
 
-# nuclei would be another good scanner to add - https://github.com/projectdiscovery/nuclei
-
 # cprint("CREATE A MODULE THAT will use wfuzz or somethikng similar to submit the payload into forms, sqlmap won't do this unless injectable; for the most part", "red")
 # time.sleep(1)
 
@@ -844,6 +866,7 @@ parser.add_argument("--urlstatus", nargs='?', metavar="FILE", help='Check URL st
 parser.add_argument("--waybackurls", nargs='?', metavar="DOMAIN", help='Run waybackurls on file: \033[92m\033[1mtargetDomains\033[0m (python3 recon.py --waybackurls) OR single URL: (python3 recon.py --waybackurls $url)')
 parser.add_argument("--sublister", nargs='?', metavar="DOMAIN", help='Run Subl1st3r on file: \033[92m\033[1mtargetDomains\033[0m (python3 recon.py --sublister) OR single domain: (python3 recon.py --sublister $domain)')
 parser.add_argument("--amass", nargs='?', metavar="DOMAIN", help='Run amass on file: \033[92m\033[1mtargetDomains\033[0m (python3 recon.py --amass) OR single domain: (python3 recon.py --amass $domain)')
+parser.add_argument("--nuclei", nargs='?', metavar="DOMAIN", help='Run nuclei on file: \033[92m\033[1mtargetDomains\033[0m (python3 recon.py --nuclei) OR single domain: (python3 recon.py --nuclei $domain)')
 parser.add_argument("--subbrute", nargs='?', metavar="DOMAIN", help='Run subbrute on file: \033[92m\033[1mtargetDomains\033[0m (python3 recon.py --subbrute) OR single domain: (python3 recon.py --subbrute $domain)')
 parser.add_argument("--gobuster", nargs='?', metavar="DOMAIN", help='Run gobuster on file: \033[92m\033[1mtargetDomains\033[0m (python3 recon.py --gobuster) OR single domain: (python3 recon.py --gobuster $domain)') #Run by itself as of now, data isn't deduped (can be misleading with 200' as well
 parser.add_argument("--ffuf", metavar='[URL]', help='Run wfuzz on user supplied target URL. Example URL: \033[92m\033[1mhttp://domain.com/FUZZ\033[0m (FUZZ is fuzz word and required)')
@@ -865,7 +888,7 @@ args = parser.parse_args()
 def main():
     try:
        opts, args = getopt.getopt(sys.argv[1:],"hi:", 
-            ["help", "recon-passive", "recon-active", "attack", "recon-attack", "xss-log4j", "bustmap", "bustmapql", "log4j", "sqlmap", "nmap", "urlstatus", "waybackurls", "sublister", "amass", "subbrute", "gobuster", "ffuf", "xss", "hydra", "bypass403", "formsubmit", "urlfuzz", "wpscan", "wfuzz", "genpayloads", "removeunwanted", "createfiles", "addhttps", "test"])
+            ["help", "recon-passive", "recon-active", "attack", "recon-attack", "xss-log4j", "bustmap", "bustmapql", "log4j", "sqlmap", "nmap", "urlstatus", "waybackurls", "sublister", "amass", "nuclei", "subbrute", "gobuster", "ffuf", "xss", "hydra", "bypass403", "formsubmit", "urlfuzz", "wpscan", "wfuzz", "genpayloads", "removeunwanted", "createfiles", "addhttps", "test"])
     
     except getopt.GetoptError:
       sys.exit(2)
@@ -970,6 +993,12 @@ def main():
             else:
                 amass(args[0])
 
+        elif opt == ("--nuclei"):            
+            if args == []:
+                nuclei()
+            else:
+                nuclei(args[0])
+
         elif opt == ("--subbrute"):            
             if args == []:
                 subbrute()
@@ -1070,5 +1099,4 @@ if __name__ == "__main__":
 # cprint("maybe get rid of createfiles function and have it autogenerate each file if not exist, won't know anything on the target anyway", "red")
 # cprint("work on urlfuzz module to get it to auto generate a target file, if possible", "green")
 # cprint("have submit forms use selenium to hit submit", "red")
-# cprint("add nuclei toool, already put it in the install.sh file for kali")
 # cprint("####", "red")

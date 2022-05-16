@@ -10,11 +10,13 @@ To Do:
 
 <ul>
 <li>amass not working right on container; or maybe at all</li>
-<li>nuclei</li>
-<li>put all variables into the payloads file</li>
-<li>Fix gobuster for container (wordlist path is wrong, check out work vm for the path the container has /usr/share/dirb/wordlist instead of /usr/share/wordlists/dirb/)</li>
-<li>Setup the trinity account to be used instead of root</li>
-<li>make sure ffuf is working right, comments in the isntall.sh file; apt install no go on ubuntu</li>
+<li>put all variables into the payloads file??</li>
+<li>add symlinks instead of alias's for calling reco?</li>
+<li>create a payloads file for sqlmap and other tools so its easy to change payloads and not look at entire code, replaces one above, #3</li>
+<li>verify openvpn works, although best to just run this on a minimul install VM</li>
+<li>create a yaml/ansible file for the install instead of install.sh</li>
+<li>try loop on ssh_connect and rdp_connect</li>
+<li>If can get PIA working be nice</li>
 </ul>
 
 ## Install & Usage: 
@@ -24,27 +26,43 @@ To Do:
 <li>Change the interact.sh variable to your URL in run/reco.py</li>
 <li>Set the logdir variable in run/reco.py for logging</li>
 <li>Any other variables that are required are at the top of run/reco.py or in run/payloads.py</li>
+<li>XRDP & SSH are open (SSH is mainly for proxychains type of stuff and you know on xrdp)</li>
+<li>VNC HTML 5 view as main Remote Access Tool</li>
+<li>Change passwords in docker-compose.yml</li>
 </ol>
 
-### Docker
+### Install Docker & Docker Compose
 
-Edit the run.sh "volume" variable to the location of where you have cloned this repo
+```
+sudo bash install_docker_ubuntu.sh
+```
 
-To build and run:
+Give your user access to use docker
+```
+sudo usermod -aG docker $user
+sudo reboot
+```
+
+### Container Setup
+
+Edit the "volume" variable to the location of where you have cloned this repo in the docker-compose.yml
+
+Build and run:
 
 ```
 bash deploy.sh
 ```
 
-To reconnect if stopped:
-
-```
-bash reconnect.sh
-```
-
 ### RECO
 
-To run with alias edit:
+To find vnc, ssh or xrdp IP
+
+```
+docker inspect reco | grep -o '"IPAddress":.*' | sort -u | grep -o "[0-9._]" | tr '\n' ' ' | sed 's/ //g'
+
+```
+
+Run with alias edit:
 
 ```
 reco -h
@@ -56,37 +74,21 @@ Without alias edit:
 python3 reco.py -h
 ```
 
-## Install Docker & Docker Compose
+## Connect To The Container
 
-install_docker_ubuntu.sh:
+HTML5/VNC - This url will give you an option for copy and paste/screen fill (settings on left, "remote resizing")
 
-```bash
-#! /bin/bash
-if [ "$EUID" -ne 0 ]
-  then echo "[-] Please run as root"
-  exit
-fi
-
-# install the required services, pull docker the right docker for debian
-apt-get install -y \
-    apt-transport-https \
-    ca-certificates \
-    curl \
-    gnupg-agent \
-    software-properties-common
-
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-
-add-apt-repository -y \
-   "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
-   $(lsb_release -cs) \
-   stable"
-
-apt-get update
-
-#apt-get install -y docker-ce docker-ce-cli containerd.io
-apt-get install -y --no-install-recommends docker-ce
-
-# get docker-compose
-curl -L "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 ```
+http://localhost/vnc.html
+```
+
+To reconnect ssh
+
+```
+bash ssh_reconnect.sh
+```
+
+To reconnect RDP
+
+```
+bash rdp_connect.sh
