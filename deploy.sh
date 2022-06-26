@@ -13,6 +13,7 @@ docker-compose up -d
 # bash run.sh
 
 echo "Your container IP is: "
+echo " "
 docker inspect reco | grep -o '"IPAddress":.*' | sort -u | grep -o "[0-9._]" | tr '\n' ' ' | sed 's/ //g'
 
 # docker logs reco    #get passwords

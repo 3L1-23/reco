@@ -773,14 +773,15 @@ def wpscan(URL=None):
 
 
 def default_http_hunter(URL=None):
-    cprint("Running default-http-hunter", "green")
-    command = 'cd /github/default-http-login-hunter/ && bash default-http-login-hunter.sh'
+    cprint("Running default-http-hunter\n", "green")
+    command = 'bash /github/default-http-login-hunter/default-http-login-hunter.sh'
 
     if URL == None:
         
         try: 
             targets = f"{logDir}default-http-hunter"
-            os.system(f'command {targets} >> {logDir}/default-http-hunter-results')
+            cprint(f"[Batch] job on {targets} file", "magenta")
+            os.system(f'{command} {targets} >> {logDir}default-http-hunter-results')
 
         except Exception as e:
             cprint(e, "red")
@@ -788,7 +789,8 @@ def default_http_hunter(URL=None):
     else:
 
         try:
-            os.system(f'command {URL} >> {logDir}/default-http-hunter-results')
+            cprint(f"[Single] job on {URL}", "magenta")
+            os.system(f'{command} {URL} >> {logDir}default-http-hunter-results')
 
         except Exception as e:
             cprint(e, "red")
@@ -796,7 +798,7 @@ def default_http_hunter(URL=None):
 
 def createFiles():
     for i in {"targetDomains", "SQLMapTargets", "NMAPTargets", "log4jtargs", "fuzzUrlTargs", "wordpressTargs", "default-http-hunter"}:
-        os.system(f'touch {logDir}/{i}')    
+        os.system(f'touch {logDir}{i}')    
 
 ####BEGINNING####
 def test(callback_host, payload):
@@ -883,7 +885,7 @@ args = parser.parse_args()
 def main():
     try:
        opts, args = getopt.getopt(sys.argv[1:],"hi:", 
-            ["help", "recon-passive", "recon-active", "attack", "recon-attack", "xss-log4j", "bustmap", "bustmapql", "log4j", "sqlmap", "nmap", "urlstatus", "waybackurls", "sublister", "amass", "nuclei", "subbrute", "gobuster", "ffuf", "xss", "hydra", "bypass403", "formsubmit", "urlfuzz", "wpscan", "wfuzz", "--default-http-hunter", "genpayloads", "removeunwanted", "createfiles", "addhttps", "test"])
+            ["help", "recon-passive", "recon-active", "attack", "recon-attack", "xss-log4j", "bustmap", "bustmapql", "log4j", "sqlmap", "nmap", "urlstatus", "waybackurls", "sublister", "amass", "nuclei", "subbrute", "gobuster", "ffuf", "xss", "hydra", "bypass403", "formsubmit", "urlfuzz", "wpscan", "wfuzz", "default-http-hunter", "genpayloads", "removeunwanted", "createfiles", "addhttps", "test"])
     
     except getopt.GetoptError:
       sys.exit(2)
