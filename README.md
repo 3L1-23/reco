@@ -12,18 +12,17 @@
 
 <ol>
 <li>Change the variables for XSS payloads to your URL in run/payloads.py </li>
-<li>Change the interact.sh variable to your URL in run/reco.py</li>
-<li>Set the logdir variable in run/reco.py for logging</li>
-<li>Any other variables that are required are at the top of run/reco.py or in run/payloads.py</li>
-<li>XRDP & SSH are open (SSH is mainly for proxychains type of stuff and you know on xrdp)</li>
-<li>VNC HTML 5 view as main Remote Access Tool</li>
+<li>Change the interact.sh variable to your URL in run/payloads.py</li>
+<li>Set the logdir variable in run/payloads.py for logging</li>
 <li>Change passwords in docker-compose.yml</li>
+<li>Any other variables that are required are at the top of run/payloads.py under Vars section</li>
+<li>VNC HTML 5, XRDP & SSH are Remote Access Tools (SSH is mainly for proxychains type)</li>
 </ol>
 
 ### Install Docker & Docker Compose
 
 ```
-sudo bash install_docker_ubuntu.sh
+sudo bash host/install_docker_ubuntu.sh
 ```
 
 Give your user access to use docker
@@ -44,7 +43,7 @@ bash deploy.sh
 
 ### RECO Usage
 
-To find vnc, ssh or xrdp IP
+To find VNC, SSH or XRDP IP
 
 ```
 docker inspect reco | grep -o '"IPAddress":.*' | sort -u | grep -o "[0-9._]" | tr '\n' ' ' | sed 's/ //g'
@@ -71,27 +70,39 @@ HTML5/VNC - This url will give you an option for copy and paste/screen fill (set
 http://localhost/vnc.html
 ```
 
-To reconnect ssh
+To reconnect SSH
 
 ```
-bash ssh_reconnect.sh
+bash host/ssh_reconnect.sh
 ```
 
 To reconnect RDP
 
 ```
-bash rdp_connect.sh
+bash host/rdp_connect.sh
+```
+
+## Update 
+
+Rebuild the container 
+
+OR
+
+Ensure you are running the container with the -v or volume in the /run folder (this works in container and on normal system)
+
+```
+git pull
+bash install.sh
 ```
 
 ## To Do
 
 <ul>
-<li>amass not working right on container; or maybe at all</li>
-<li>put all variables into the payloads file??</li>
 <li>add symlinks instead of alias's for calling reco?</li>
-<li>create a payloads file for sqlmap and other tools so its easy to change payloads and not look at entire code, replaces one above, #3</li>
 <li>verify openvpn works, although best to just run this on a minimul install VM</li>
-<li>create a yaml/ansible file for the install instead of install.sh</li>
+<li>create a ansible playbook for the install instead of install.sh</li>
 <li>try loop on ssh_connect and rdp_connect</li>
 <li>If can get PIA working be nice</li>
+<li>Create masscan function and break away from nmap</li>
+<li>Maybe get ubuntu desktop as the RDP setup</li>
 </ul>

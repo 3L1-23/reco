@@ -1,4 +1,5 @@
-FROM ubuntu:impish
+FROM kalilinux/kali-rolling
+# FROM ubuntu:impish
 
 # DEBIAN_FRONTEND=nointeractive; So it doesn't prompt for location
 RUN apt-get update && \
