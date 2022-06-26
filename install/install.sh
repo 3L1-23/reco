@@ -54,6 +54,8 @@ cd /github/ && git clone https://github.com/iamj0ker/bypass-403
 
 cd /github/ && git clone https://github.com/TheRook/subbrute.git
 
+cd /github/ && git clone https://github.com/InfosecMatter/default-http-login-hunter.git
+
 # sudo chown -R $user:$user /github/    #for vm - comment out for container
 echo "alias reco='python3 /reco/reco.py'" >> ~/.bashrc; source ~/.bashrc
 echo "alias reco='python3 /reco/reco.py'" >> /home/trinity/.bashrc

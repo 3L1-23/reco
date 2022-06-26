@@ -757,15 +757,14 @@ def ffuf(URL=None):
 
 def wfuzz(URL):
     os.system(wfuzz)
-                        
-    
+
+
 def wpscan(URL=None):
     cprint("Ensure your targets are just the BASE domain name, not full URL`s for batch file run", "red")
     cprint("Or change the output file to be like the single run command", "red")
     time.sleep(3)
     if URL == None:
-        # for url in open(f"{logDir}wordpressTargs", "r").read().splitlines():
-        for url in open(f"test", "r").read().splitlines():
+        for url in open(f"{logDir}wordpressTargs", "r").read().splitlines():
             stripURL = url.replace("https:", '')
             stripURL = stripURL.replace("/", '')
             os.system(f"wpscan --url {url} -o {logDir}wpscan-{stripURL}")
@@ -773,10 +772,31 @@ def wpscan(URL=None):
         os.system(f"wpscan --url {URL} >> {logDir}wpscan{randomIntSmall}")
 
 
-def createFiles():
-    for i in {"targetDomains", "SQLMapTargets", "NMAPTargets", "log4jtargs", "fuzzUrlTargs", "wordpressTargs"}:
-        os.system(f'touch {logDir}/{i}')    
+def default_http_hunter(URL=None):
+    cprint("Running default-http-hunter", "green")
+    command = 'cd /github/default-http-login-hunter/ && bash default-http-login-hunter.sh'
 
+    if URL == None:
+        
+        try: 
+            targets = f"{logDir}default-http-hunter"
+            os.system(f'command {targets} >> {logDir}/default-http-hunter-results')
+
+        except Exception as e:
+            cprint(e, "red")
+
+    else:
+
+        try:
+            os.system(f'command {URL} >> {logDir}/default-http-hunter-results')
+
+        except Exception as e:
+            cprint(e, "red")
+
+
+def createFiles():
+    for i in {"targetDomains", "SQLMapTargets", "NMAPTargets", "log4jtargs", "fuzzUrlTargs", "wordpressTargs", "default-http-hunter"}:
+        os.system(f'touch {logDir}/{i}')    
 
 ####BEGINNING####
 def test(callback_host, payload):
@@ -851,6 +871,7 @@ parser.add_argument("--formsubmit", nargs='?', metavar="URL", help='Submit XSS p
 parser.add_argument("--urlfuzz", action='store_false', help='Required file: \033[92m\033[1mfuzzUrlTargs\033[0m Fuzz url inputs from file replacing keyword "hoopety" with payload\033[31;1;92m manually\033[0m first (xss & log4j payloads are used)')
 parser.add_argument("--wpscan", nargs='?', metavar="URL", help='Run WPScan on file: \033[92m\033[1mwordpressTargs\033[0m (python3 recon.py --wpscan) OR single URL: (python3 recon.py --wpscan $url)')
 parser.add_argument("--wfuzz", metavar='[target.com or IP]', help='Run wfuzz on user supplied target URL')
+parser.add_argument("--default-http-hunter", nargs='?', metavar="URL", help='Run default-http-hunter on file: \033[92m\033[1mdefault-http-hunter\033[0m (python3 recon.py --default-http-hunter) OR single URL: (python3 recon.py --default-http-hunter $url)')
 parser.add_argument("--genpayloads", metavar="[LISTENER]", help='Enter callback_host or listener') #Pass protocol (dns, rmi, ldap) add this to this
 parser.add_argument("--removeunwanted", metavar="[FILE]", help='Remove .img, .png, .pdf, .css, .js from a file. Remember to check out the full waybackurls file for .js and other files for manual testing')
 parser.add_argument("--createfiles", action='store_false', help='Create files not auto generated, ensure your log directory is set')
@@ -862,7 +883,7 @@ args = parser.parse_args()
 def main():
     try:
        opts, args = getopt.getopt(sys.argv[1:],"hi:", 
-            ["help", "recon-passive", "recon-active", "attack", "recon-attack", "xss-log4j", "bustmap", "bustmapql", "log4j", "sqlmap", "nmap", "urlstatus", "waybackurls", "sublister", "amass", "nuclei", "subbrute", "gobuster", "ffuf", "xss", "hydra", "bypass403", "formsubmit", "urlfuzz", "wpscan", "wfuzz", "genpayloads", "removeunwanted", "createfiles", "addhttps", "test"])
+            ["help", "recon-passive", "recon-active", "attack", "recon-attack", "xss-log4j", "bustmap", "bustmapql", "log4j", "sqlmap", "nmap", "urlstatus", "waybackurls", "sublister", "amass", "nuclei", "subbrute", "gobuster", "ffuf", "xss", "hydra", "bypass403", "formsubmit", "urlfuzz", "wpscan", "wfuzz", "--default-http-hunter", "genpayloads", "removeunwanted", "createfiles", "addhttps", "test"])
     
     except getopt.GetoptError:
       sys.exit(2)
@@ -1017,6 +1038,12 @@ def main():
                 
         elif opt == ("--wfuzz"):
             wfuzz(args[0])
+
+        elif opt == ("--default-http-hunter"):
+            if args == []:
+                default_http_hunter()
+            else:
+                default_http_hunter(args[0])
 
         elif opt == ("--genpayloads"):
             callback_attacker = args[0]
