@@ -21,7 +21,7 @@ echo "Done with wget, unzip install"
 # echo "Done with pip3 install"
 
 #kali install, run with ubuntu though some will work.
-sudo apt install -y masscan gobuster nmap sqlmap golang-go wfuzz hydra-gtk wpscan dirb dirbuster sublist3r ffuf amass nuclei wordlists seclists
+sudo apt install -y masscan gobuster nmap sqlmap golang-go wfuzz hydra-gtk wpscan dirb dirbuster sublist3r ffuf amass nuclei wordlists seclists nikto crowbar
 
 echo "Main install complete"
 

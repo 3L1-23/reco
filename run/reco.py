@@ -1,3 +1,4 @@
+
 #!/bin/python3
 
 from ast import Break, Continue
@@ -325,7 +326,7 @@ def sqlmap(url=None):
     #SQLMap = f'sqlmap -u "{url}" --banner --batch --tamper=apostrophemask --random-agent --level 3 --risk 3'
     SQLMap = f'sqlmap -u "{url}" --banner --batch --tamper=apostrophemask --random-agent'
     #SQLMapForms = f'sqlmap -u "{url}" --banner --forms --batch --tamper=apostrophemask --random-agent'
-    SQLMapForms = f'sqlmap -u "{url}" --banner --forms --batch --tamper=apostrophemask --random-agent --leve 3 --risk 3'
+    SQLMapForms = f'sqlmap -u "{url}" --banner --forms --batch --tamper=apostrophemask --random-agent --level 3 --risk 3'
     
     if url == None:
         for i in open(logDir + "SQLMapTargets", "r").read().splitlines():
@@ -463,7 +464,7 @@ def IPlookup(host):
 
 
 def nmap(dom=None, scantype=None):
-    cprint("Masscan doens't take domains as input, only IP's but an NSLookup will occur on domains\n", "red")
+    cprint("\nMasscan doens't take domains as input, only IP's but an NSLookup will occur on domains\n", "red")
 
     # os.system(f"nmap -sC -A -T 4 -sV -Pn --top-ports 100 {dom} >> {logDir}{dom} -nmap")
     nmap = (f"nmap -sC -A -T 4 -sV -Pn -p- {{dom}} >> {logDir}{{dom}}-nmap")    
@@ -495,18 +496,42 @@ def nmap(dom=None, scantype=None):
             # os.system(f"sudo masscan {masscanIP} -p 1-65535 -oX {logDir}{dom}-masscan")
 
     else:
+        cprint(f"[Single] Running {scantype} on {dom} log file location: {logDir}{dom}-nmap\n", "green")
+        cmd_text = "Command being run:\n"
 
-        cprint(f"[Single] Running nmap on {dom} log file location: {logDir}{dom}-nmap\n", "green")
-        cprint("Commands being run:\n", "green")
-        nmap = scantype.replace("{dom}", dom)
-        cprint(nmap, "magenta")
-        os.system(nmap)
+        if scantype == "nmap":
+            final_scan = nmap.replace("{dom}", dom)
+            cprint(f"{cmd_text} {final_scan}", "green")
+            os.system(final_scan)
+        
+        elif scantype == "vulners":
+            final_scan = vulners.replace("{dom}", dom)
+            cprint(f"{cmd_text} {final_scan}", "green")
+            os.system(final_scan)
+
+        elif scantype == "vulnersxml":
+            final_scan = vulnersxml.replace("{dom}", dom)
+            cprint(f"{cmd_text} {final_scan}", "green")
+            os.system(final_scan)
+
+        elif scantype == "udpallports":
+            final_scan = udpallports.replace("{dom}", dom)
+            cprint(f"{cmd_text} {final_scan}", "green")
+            os.system(final_scan)
+        
+        else:
+            cprint("ERROR - Scan type not recognized", "red")
 
         # cprint(f"[Single] Running masscan on {dom} log file location: {logDir}{dom}-masscan", "green")
         # masscanIP = IPlookup(dom)
         # os.system(f"sudo masscan {masscanIP} -p 1-65535 -oX {logDir}{dom}-masscan")
+
+
+def nmap_scantype():
+    cprint("Available Commands: \n nmap\n vulners\n vulnersxml\n udpallports\n", "green")
+    return input("\033[92m\033[1mEnter scan type:\n")
         
-        
+
 # Used to remove .png, .jpg, .svg, etc
 def removeUnwanted(file=None):
 
@@ -610,7 +635,7 @@ def hydra(host):
     
     ####
     os.system(f'hydra -t 64 {host} http-post-form "{payload}" -l username -P {wordlist}')
-    os.system(f'hydra -t 64 -l pedro -P {wordlist} rdp://{host}')   #RDP brute force
+    # os.system(f'hydra -t 64 -l pedro -P {wordlist} rdp://{host}')   #RDP brute force use crowbar instead
 
 def bypass403():
     cprint("Trying bypass payloads for 403 pages for targets in file: targetscodes403", "green")
@@ -796,9 +821,64 @@ def default_http_hunter(URL=None):
             cprint(e, "red")
 
 
+def nikto(URL=None):
+    cprint("Running nikto", "green")
+        
+    if URL == None:
+        
+        try: 
+            for url in open(f"{logDir}niktoTargs", "r").read().splitlines():
+               cprint(f"[Batch] job on {url} file", "magenta")
+               os.system(f'nikto -h {url} >> {logDir}nikto_results_batch')
+
+        except Exception as e:
+            cprint(e, "red")
+
+    else:
+
+        try:
+            cprint(f"[Single] job on {URL}", "magenta")
+            os.system(f'nikto -h {URL} >> {logDir}nikto_results_single')
+
+        except Exception as e:
+            cprint(e, "red")
+
+def crowbar(URL=None, protocol="rdp"):
+# def crowbar(user, URL=None, protocol="rdp"):
+    cprint("Running crowbar)", "green")
+    cprint(f"\nWordlist:\n{wordlist}\n", "green")
+    cprint(f"Usernames wordlist:\n{usernames}\n", "green")
+    text = "Command: "
+    # cmd = f"crowbar -b {protocol} -u {user} -C {wordlist} -n 20 -s URL/32"
+    cmd = f"crowbar -b {protocol} -U {usernames} -C {wordlist} -n 20 -s URL/32"
+
+    if URL == None:
+        
+        try: 
+            for batchurl in open(f"{logDir}crowbarTargs", "r").read().splitlines():
+               cprint(f"[Batch] job on {batchurl} file", "magenta")
+               cmd = cmd.replace("URL", batchurl)
+               cprint(f"\n{text}\n{cmd}", "green")
+               os.system(f'{cmd} >> {logDir}crowbar_results_batch')
+
+        except Exception as e:
+            cprint(e, "red")
+
+    else:
+
+        try:
+            cprint(f"[Single] job on {URL}", "magenta")
+            cmd = cmd.replace("URL", URL)
+            cprint(f"\n{text}\n{cmd}", "green")
+            os.system(f'sudo {cmd} >> {logDir}crowbar_results_single')
+                  
+        except Exception as e:
+            cprint(e, "red")
+
+
 def createFiles():
-    for i in {"targetDomains", "SQLMapTargets", "NMAPTargets", "log4jtargs", "fuzzUrlTargs", "wordpressTargs", "default-http-hunter"}:
-        os.system(f'touch {logDir}{i}')    
+    for i in {"targetDomains", "SQLMapTargets", "NMAPTargets", "log4jtargs", "fuzzUrlTargs", "wordpressTargs", "default-http-hunter", "niktoTargs", "crowbarTargs"}:
+        os.system(f'touch {logDir}{i}') 
 
 ####BEGINNING####
 def test(callback_host, payload):
@@ -874,6 +954,8 @@ parser.add_argument("--urlfuzz", action='store_false', help='Required file: \033
 parser.add_argument("--wpscan", nargs='?', metavar="URL", help='Run WPScan on file: \033[92m\033[1mwordpressTargs\033[0m (python3 recon.py --wpscan) OR single URL: (python3 recon.py --wpscan $url)')
 parser.add_argument("--wfuzz", metavar='[target.com or IP]', help='Run wfuzz on user supplied target URL')
 parser.add_argument("--default-http-hunter", nargs='?', metavar="URL", help='Run default-http-hunter on file: \033[92m\033[1mdefault-http-hunter\033[0m (python3 recon.py --default-http-hunter) OR single URL: (python3 recon.py --default-http-hunter $url)')
+parser.add_argument("--nikto", nargs='?', metavar="URL", help='Run nikto on file: \033[92m\033[1mniktoTargs\033[0m (python3 recon.py --nikto) OR single URL: (python3 recon.py --nikto $url)')
+parser.add_argument("--crowbar", nargs='?', metavar="URL", help='Run crowbar on file: \033[92m\033[1mcrowbarTargs\033[0m (python3 recon.py --crowbar) OR single URL: (python3 recon.py --crowbar $url) (needs wordlist and usernames var)')
 parser.add_argument("--genpayloads", metavar="[LISTENER]", help='Enter callback_host or listener') #Pass protocol (dns, rmi, ldap) add this to this
 parser.add_argument("--removeunwanted", metavar="[FILE]", help='Remove .img, .png, .pdf, .css, .js from a file. Remember to check out the full waybackurls file for .js and other files for manual testing')
 parser.add_argument("--createfiles", action='store_false', help='Create files not auto generated, ensure your log directory is set')
@@ -885,7 +967,7 @@ args = parser.parse_args()
 def main():
     try:
        opts, args = getopt.getopt(sys.argv[1:],"hi:", 
-            ["help", "recon-passive", "recon-active", "attack", "recon-attack", "xss-log4j", "bustmap", "bustmapql", "log4j", "sqlmap", "nmap", "urlstatus", "waybackurls", "sublister", "amass", "nuclei", "subbrute", "gobuster", "ffuf", "xss", "hydra", "bypass403", "formsubmit", "urlfuzz", "wpscan", "wfuzz", "default-http-hunter", "genpayloads", "removeunwanted", "createfiles", "addhttps", "test"])
+            ["help", "recon-passive", "recon-active", "attack", "recon-attack", "xss-log4j", "bustmap", "bustmapql", "log4j", "sqlmap", "nmap", "urlstatus", "waybackurls", "sublister", "amass", "nuclei", "subbrute", "gobuster", "ffuf", "xss", "hydra", "bypass403", "formsubmit", "urlfuzz", "wpscan", "wfuzz", "default-http-hunter", "nikto", "crowbar", "genpayloads", "removeunwanted", "createfiles", "addhttps", "test"])
     
     except getopt.GetoptError:
       sys.exit(2)
@@ -928,7 +1010,7 @@ def main():
                 nmap()
                 goBuster()
             else:
-                nmap(args[0])
+                nmap(args[0], nmap_scantype())
                 goBuster(args[0])
 
         elif opt == ("--bustmapql"):
@@ -937,7 +1019,7 @@ def main():
                 goBuster()
                 cprint('SQLMap will not be run at this time, add this function', "red")
             else:
-                nmap(args[0])
+                nmap(args[0], nmap_scantype())
                 goBuster(args[0])
                 targ = args[0]
                 cprint(f'SQLMap being run on {targ}', "green")
@@ -964,7 +1046,7 @@ def main():
             if args == []:
                 nmap()
             else:
-                nmap(args[0], args[1])
+                nmap(args[0], nmap_scantype())
 
         elif opt == ("--urlstatus"):
             if args == []:
@@ -1046,6 +1128,19 @@ def main():
                 default_http_hunter()
             else:
                 default_http_hunter(args[0])
+        
+        elif opt == ("--nikto"):
+            if args == []:
+                nikto()
+            else:
+                nikto(args[0])
+
+        elif opt == ("--crowbar"):
+            if args == []:
+                crowbar()
+            else:
+            # crowbar(input("\033[92m\033[1mEnter Username:\n"), args[0])
+                crowbar(args[0])
 
         elif opt == ("--genpayloads"):
             callback_attacker = args[0]
@@ -1061,7 +1156,6 @@ def main():
             cprint("magenta = xss payloads", "magenta")
             cprint("#########", "red")
             
-        
         elif opt == ("--removeunwanted"):
             removeUnwanted(args[0])
 

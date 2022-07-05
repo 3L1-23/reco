@@ -1,5 +1,7 @@
 #### <Vars> ####
-##Logging##
+
+##<Logging>##
+# The files used in reco for targets will be in this directory
 logTarget = "reco"
 # platform = "bugcrowd"
 # platform = "hacker1"
@@ -8,19 +10,31 @@ logTarget = "reco"
 logDir = f"/{logTarget}/logs/"
 ##</Logging##
 
-##wordlists##
-#wordlist="/usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-small.txt"
+##<wordlists>##
+### web directories
+# wordlist="/usr/share/wordlists/dirbuster/directory-list-lowercase-2.3-small.txt"
 # wordlist = "/usr/share/wordlists/wfuzz/general/big.txt"
 wordlist = "/usr/share/wordlists/dirb/common.txt"
+### Passwords
+# wordlist = "/usr/share/wordlists/seclists/Passwords/Most-Popular-Letter-Passes.txt"
+# wordlist = "/usr/share/wordlists/seclists/Passwords/Common-Credentials/10k-most-common.txt"
+# wordlist = "/usr/share/wordlists/seclists/Passwords/days.txt"
+# wordlist = "/usr/share/wordlists/seclists/Passwords/Default-Credentials/default-passwords.txt"
+# wordlist = "/usr/share/wordlists/seclists/Passwords/months.txt"
+# wordlist = "/usr/share/wordlists/seclists/Passwords/Keyboard-Combinations.txt"
+# wordlist = "/usr/share/wordlists/seclists/Passwords/Common-Credentials/100k-most-used-passwords-NCSC.txt"
+### Useranmes
+usernames = "/usr/share/wordlists/usernames.txt"
 ##</wordlists##
 
-##listeners##
+##<listeners>##
 attackerLDAP = 'yourinteracturl.interact.sh:1389'
 callback_host = 'yourinteracturl.interact.sh'
 ##</listeners##
 
-##XSS Hunter or other XSS payloads
+##XSS Hunter or other XSS payloads##
 xss_url = '3li.xss.ht'
+##</XSS>##
 
 #### </Vars> ####
 
